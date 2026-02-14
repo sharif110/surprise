@@ -137,7 +137,7 @@
 
             background: var(--gold-gradient);
             border: none;
-            padding: 25px 50px;
+            padding: 15px 50px;
             font-size: 1.2rem;
             font-weight: bold;
             border-radius: 50px;
@@ -449,10 +449,32 @@
         // 3. Button Logic
         function moveNo() {
             const btn = document.getElementById('no-btn');
-            const x = Math.random() * (window.innerWidth - btn.offsetWidth);
-            const y = Math.random() * (window.innerHeight - btn.offsetHeight);
-            btn.style.left = `${x}px`;
-            btn.style.top = `${y}px`;
+            const yes = document.getElementById('yes-btn');
+            const padding = 12;
+            const maxAttempts = 30;
+
+            const btnW = btn.offsetWidth;
+            const btnH = btn.offsetHeight;
+            const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+            const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+            const yesRect = yes.getBoundingClientRect();
+
+            let x = padding, y = padding;
+            let attempt = 0;
+            while (attempt < maxAttempts) {
+                x = Math.random() * (vw - btnW - padding * 2) + padding;
+                y = Math.random() * (vh - btnH - padding * 2) + padding;
+
+                const noLeft = x, noRight = x + btnW, noTop = y, noBottom = y + btnH;
+                const buffer = 8; // small safe gap
+
+                const overlap = !(noRight + buffer < yesRect.left || noLeft - buffer > yesRect.right || noBottom + buffer < yesRect.top || noTop - buffer > yesRect.bottom);
+                if (!overlap) break;
+                attempt++;
+            }
+
+            btn.style.left = `${Math.max(padding, Math.min(x, vw - btnW - padding))}px`;
+            btn.style.top = `${Math.max(padding, Math.min(y, vh - btnH - padding))}px`;
             btn.style.position = 'fixed';
         }
 
@@ -553,5 +575,3 @@
 </body>
 
 </html>
-
-
